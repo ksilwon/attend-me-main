@@ -1,6 +1,7 @@
-- Imię i nazwisko, numer indeksu, zakres prac (opisowo lub lista plików)
+Kacper Silwon 15143
+Marcin Szałach
+Filip Berniak
 
----
 
 Użycie AI w projekcie (zgodnie z wytycznymi):
 W projekcie nie wykorzystano narzędzi SI do generowania większych fragmentów kodu. Ewentualne drobne sugestie (np. konfiguracja, typy, poprawki stylów) miały charakter oczywisty i typowy – nie oznaczano ich w kodzie, zgodnie z wytycznymi dla takich fragmentów.
