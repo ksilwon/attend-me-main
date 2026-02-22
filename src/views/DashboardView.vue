@@ -10,7 +10,6 @@ const isLoading = ref(true)
 const userRole = computed(() => {
   const login = authStore.user?.loginName || sessionStorage.getItem('userLogin') || ''
   
-  // Sprawdź role z API
   if (authStore.user?.roles?.length) {
     if (authStore.user.roles.some(r => r.toLowerCase() === 'teacher' || r.toLowerCase() === 'admin')) {
       return 'teacher'
@@ -19,8 +18,7 @@ const userRole = computed(() => {
       return 'student'
     }
   }
-  
-  // Fallback na podstawie loginu
+
   if (login === 'pk') return 'teacher'
   if (login.startsWith('stu')) return 'student'
   
@@ -28,7 +26,6 @@ const userRole = computed(() => {
 })
 
 onMounted(async () => {
-  // Daj chwilę na załadowanie danych
   await new Promise(resolve => setTimeout(resolve, 500))
   isLoading.value = false
 })

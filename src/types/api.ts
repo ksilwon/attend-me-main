@@ -1,5 +1,3 @@
-// Typy API bazujące na specyfikacji OpenAPI backendu AttendMe
-
 export interface TokenResult {
   token: string
   expiration?: string

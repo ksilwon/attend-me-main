@@ -1,4 +1,3 @@
-/** Zgodne z backendem: userId, loginName, name, surname, isTeacher, isStudent, isAdmin */
 export interface User {
   id?: number
   userId?: number
@@ -25,7 +24,6 @@ export interface AttendanceInfo {
   timestamp: string
 }
 
-/** Backend może zwracać courseSessionId, dateStart, dateEnd, courseGroupName, locationName */
 export interface CourseSessionListItem {
   sessionId?: number
   courseSessionId?: number
@@ -45,7 +43,6 @@ export interface CourseSessionListItem {
   attendanceStatus?: string
 }
 
-/** Filtr listy zajęć – backend oczekuje tych pól w obiekcie "filters" */
 export interface CourseSessionListFilters {
   search?: string | null
   courseName?: string | null
@@ -69,7 +66,6 @@ export interface CourseSessionListItemPagedList {
   pageSize: number
 }
 
-/** Backend: userName, userSurname, studentAlbumIdNumber, wasUserPresent, attendanceLogMinDateCreated */
 export interface CourseSessionAttendanceRecord {
   userId?: number
   attenderUserId?: number

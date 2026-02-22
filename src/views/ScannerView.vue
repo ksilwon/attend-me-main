@@ -62,7 +62,6 @@ const onDecode = async (decodedString: string) => {
     }
   }
 
-  // Ukryj komunikat po 3 sekundach
   setTimeout(() => {
     message.value = null
   }, 3000)

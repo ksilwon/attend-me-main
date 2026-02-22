@@ -8,7 +8,6 @@ export type User = {
 }
 
 export async function userLogin(loginName: string, password: string) {
-  // Swagger: POST /user/login + parametry query
   const res = await http.post('/user/login', null, {
     params: { loginName, password },
   })

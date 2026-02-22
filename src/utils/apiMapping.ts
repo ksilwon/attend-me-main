@@ -1,9 +1,3 @@
-/**
- * Mapowanie pól odpowiedzi API backendu na wspólną postać używaną w UI.
- * Backend może zwracać courseSessionId/dateStart/dateEnd (CourseSessionListItem)
- * oraz userName/userSurname/wasUserPresent (CourseSessionAttendanceRecord).
- */
-
 import type { CourseSessionListItem, CourseSessionAttendanceRecord, User } from '@/api/types'
 
 export function normalizeSession(s: CourseSessionListItem): {

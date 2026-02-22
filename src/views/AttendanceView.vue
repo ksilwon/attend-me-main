@@ -28,7 +28,6 @@ const fetchTicket = async () => {
     const result = await userAttendanceTicketGet()
     ticket.value = result.token
 
-    // Sprawdź czy jest info o ostatniej obecności
     if (result.lastAttendance) {
       lastAttendance.value = {
         userName: result.lastAttendance.userName,
@@ -51,7 +50,6 @@ const goBack = () => {
 
 onMounted(() => {
   fetchTicket()
-  // Odświeżaj co 2 sekundy
   ticketInterval = window.setInterval(fetchTicket, 2000)
 })
 

@@ -1,7 +1,5 @@
-/** Typ filtra czasowego dla list zajęć */
 export type TimeFilter = 'today' | 'tomorrow' | 'next_week' | 'past' | 'all'
 
-/** Zwraca zakres dat (dateFrom, dateTo) na podstawie filtra */
 export function getDateRange(filter: TimeFilter): { dateFrom?: string; dateTo?: string } {
   const now = new Date()
   const todayStr = formatDateISO(now)
@@ -33,7 +31,6 @@ export function getDateRange(filter: TimeFilter): { dateFrom?: string; dateTo?: 
   }
 }
 
-/** Formatuje datę do ISO (YYYY-MM-DD) */
 export function formatDateISO(d: Date): string {
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')
@@ -41,7 +38,6 @@ export function formatDateISO(d: Date): string {
   return `${y}-${m}-${day}`
 }
 
-/** Formatuje datę i czas do czytelnej postaci polskiej */
 export function formatDateTime(dateStr: string, timeStr?: string): string {
   try {
     const d = new Date(dateStr)

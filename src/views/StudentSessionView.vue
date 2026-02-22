@@ -20,13 +20,11 @@ const error = ref<string | null>(null)
 const sessionId = computed(() => Number(route.params.id))
 const groupId = computed(() => Number(route.params.groupId))
 
-// Statystyki frekwencji
 const attendanceStats = computed(() => {
   const total = attendanceLog.value.length
   const present = attendanceLog.value.filter(a => a.isPresent).length
   const percentage = total > 0 ? Math.round((present / total) * 100) : 0
   
-  // Oblicz zaawansowanie kursu
   const now = new Date()
   const pastSessions = allSessions.value.filter(
     (s) => new Date(s.sessionDate ?? s.dateStart ?? 0) <= now
@@ -58,7 +56,6 @@ const fetchData = async () => {
     allSessions.value = sessionsData
     attendanceLog.value = attendanceData
 
-    // Znajdź bieżącą sesję
     session.value = sessionsData.find(s => s.sessionId === sessionId.value) || null
   } catch (err: any) {
     error.value = err.response?.data?.message || 'Błąd pobierania danych'

@@ -64,22 +64,18 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const authStore = useAuthStore()
 
-  // Inicjalizuj auth jeśli jest token
   if (authStore.token && !authStore.user) {
     await authStore.initAuth()
   }
 
-  // Sprawdź czy wymaga autoryzacji
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     return { name: 'login' }
   }
-  
-  // Jeśli zalogowany i próbuje wejść na login - przekieruj do dashboard
+
   if (to.name === 'login' && authStore.isAuthenticated) {
     return { name: 'dashboard' }
   }
-  
-  // W przeciwnym razie pozwól przejść
+
   return true
 })
 

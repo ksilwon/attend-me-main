@@ -5,14 +5,12 @@ import { userLogin, userGet } from '@/api/endpoints'
 import { normalizeUser } from '@/utils/apiMapping'
 
 export const useAuthStore = defineStore('auth', () => {
-  // State
   const token = ref<string | null>(sessionStorage.getItem('token'))
   const deviceToken = ref<string | null>(localStorage.getItem('deviceToken'))
   const user = ref<User | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  // Getters
   const isAuthenticated = computed(() => !!token.value)
   const isDeviceRegistered = computed(() => !!deviceToken.value)
 
@@ -34,7 +32,6 @@ export const useAuthStore = defineStore('auth', () => {
     return u?.loginName?.startsWith('stu') ?? false
   })
 
-  // Actions
   const login = async (loginName: string, password: string): Promise<boolean> => {
     loading.value = true
     error.value = null
@@ -44,8 +41,7 @@ export const useAuthStore = defineStore('auth', () => {
       token.value = result.token
       sessionStorage.setItem('token', result.token)
       sessionStorage.setItem('userLogin', loginName)
-      
-      // Fallback na podstawie loginu
+
       user.value = {
         id: 0,
         loginName: loginName,

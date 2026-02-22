@@ -92,7 +92,6 @@ const goBack = () => {
   router.push({ name: 'dashboard' })
 }
 
-// Auto-odświeżanie co 30 sekund
 let refreshInterval: number | null = null
 
 onMounted(() => {

@@ -10,29 +10,17 @@ import type {
   DeviceRegisterDTO
 } from './types'
 
-/**
- * Endpointy API zgodne ze specyfikacją OpenAPI backendu AttendMe
- * (https://attendme-backend.runasp.net/swagger/v1/swagger.json)
- */
-
-// ============ AUTENTYKACJA ============
-// userLogin(loginName: string, password: string): Promise<TokenResult>
-
 export const userLogin = async (loginName: string, password: string): Promise<TokenResult> => {
   const url = `/user/login?loginName=${encodeURIComponent(loginName)}&password=${encodeURIComponent(password)}`
   const response = await http.post<TokenResult>(url)
   return response.data
 }
 
-// userGet(userId: number | undefined): Promise<User>
 export const userGet = async (userId?: number): Promise<User> => {
   const url = userId !== undefined ? `/user/get?userId=${userId}` : '/user/get'
   const response = await http.get<User>(url)
   return response.data
 }
-
-// ============ WYKŁADOWCA ============
-// courseTeacherSessionsGet(body): Promise<CourseSessionListItemPagedList>
 
 export const courseTeacherSessionsGet = async (
   params: CourseSessionListFiltersPagedListParams
@@ -44,7 +32,6 @@ export const courseTeacherSessionsGet = async (
   return response.data
 }
 
-// courseTeacherSessionGet(sessionId): Promise<CourseSessionListItem>
 export const courseTeacherSessionGet = async (sessionId: number): Promise<CourseSessionListItem> => {
   const response = await http.get<CourseSessionListItem>(
     `/course/teacher/session/get?sessionId=${sessionId}`
@@ -52,7 +39,6 @@ export const courseTeacherSessionGet = async (sessionId: number): Promise<Course
   return response.data
 }
 
-// courseSessionAttendanceListGet(sessionId): Promise<CourseSessionAttendanceRecord[]>
 export const courseSessionAttendanceListGet = async (
   sessionId: number
 ): Promise<CourseSessionAttendanceRecord[]> => {
@@ -62,7 +48,6 @@ export const courseSessionAttendanceListGet = async (
   return response.data
 }
 
-// courseSessionAttendanceScannerTokenGet(courseSessionId): Promise<TokenResult>
 export const courseSessionAttendanceScannerTokenGet = async (
   courseSessionId: number
 ): Promise<TokenResult> => {
@@ -72,8 +57,6 @@ export const courseSessionAttendanceScannerTokenGet = async (
   return response.data
 }
 
-// courseSessionAttendanceRegister(attenderToken, scannerToken): Promise<User>
-// Backend: GET /course/session/attendance/register?attenderToken=... z nagłówkiem Authorization: Bearer <scannerToken>
 export const courseSessionAttendanceRegister = async (
   attenderToken: string,
   scannerToken: string
@@ -89,9 +72,6 @@ export const courseSessionAttendanceRegister = async (
   return response.data
 }
 
-// ============ STUDENT ============
-// courseStudentSessionsGet(body): Promise<CourseSessionListItemPagedList>
-
 export const courseStudentSessionsGet = async (
   params: CourseSessionListFiltersPagedListParams
 ): Promise<CourseSessionListItemPagedList> => {
@@ -102,7 +82,6 @@ export const courseStudentSessionsGet = async (
   return response.data
 }
 
-// courseStudentGroupSessionsGet(courseGroupId): Promise<CourseSessionListItem[]>
 export const courseStudentGroupSessionsGet = async (
   courseGroupId: number
 ): Promise<CourseSessionListItem[]> => {
@@ -112,7 +91,6 @@ export const courseStudentGroupSessionsGet = async (
   return response.data
 }
 
-// courseStudentAttendanceGet(courseGroupId): Promise<AttendanceLog[]>
 export const courseStudentAttendanceGet = async (
   courseGroupId: number
 ): Promise<AttendanceLog[]> => {
@@ -122,14 +100,10 @@ export const courseStudentAttendanceGet = async (
   return response.data
 }
 
-// userAttendanceTicketGet(): Promise<TokenResult> – wymaga tokenu urządzenia (device token)
 export const userAttendanceTicketGet = async (): Promise<TokenResult> => {
   const response = await http.get<TokenResult>('/user/attendance/ticket/get')
   return response.data
 }
-
-// ============ REJESTRACJA URZĄDZENIA ============
-// userDeviceRegisterWithToken(token, data): Promise<TokenResult>
 
 export const userDeviceRegisterWithToken = async (
   token: string,
@@ -142,7 +116,6 @@ export const userDeviceRegisterWithToken = async (
   return response.data
 }
 
-// userDeviceRegisterTokenGet(deviceUserId): Promise<TokenResult> – dla wykładowcy (generowanie linku)
 export const userDeviceRegisterTokenGet = async (
   deviceUserId?: number
 ): Promise<TokenResult> => {
@@ -153,8 +126,6 @@ export const userDeviceRegisterTokenGet = async (
   return response.data
 }
 
-// deviceAuthReset() – zerowanie tokenu urządzenia po stronie klienta (localStorage)
-// Opcjonalnie: wywołanie backendu POST /user/device/reset?deviceUserId=... (wymaga roli teacher)
 export const userDeviceReset = async (deviceUserId?: number): Promise<void> => {
   const url = deviceUserId !== undefined
     ? `/user/device/reset?deviceUserId=${deviceUserId}`

@@ -10,17 +10,14 @@ const http = axios.create({
   }
 })
 
-// Request interceptor - dodaje token do nagłówków
 http.interceptors.request.use(
   (config) => {
-    // Nie dodawaj tokenu do logowania ani rejestracji urządzenia (token w query)
     if (config.url?.includes('/user/login') || config.url?.includes('/user/device/register')) {
       return config
     }
 
     const authStore = useAuthStore()
 
-    // Żądania biletów obecności (QR) wymagają tokenu urządzenia
     if (config.url?.includes('/user/attendance/ticket/get')) {
       const deviceToken = authStore.deviceToken
       if (deviceToken) {
@@ -40,7 +37,6 @@ http.interceptors.request.use(
   }
 )
 
-// Response interceptor - obsługa błędów
 http.interceptors.response.use(
   (response) => response,
   (error) => {

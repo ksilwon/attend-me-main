@@ -3,7 +3,7 @@ import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="min-vh-100 d-flex align-items-center justify-content-center bg-light auth-screen">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-md-6 col-lg-4">

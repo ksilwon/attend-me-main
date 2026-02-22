@@ -30,7 +30,7 @@ const handleLogout = () => {
 <template>
   <div class="min-vh-100 d-flex flex-column">
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary navbar-attendme">
       <div class="container">
         <RouterLink to="/app" class="navbar-brand fw-bold">
           <i class="bi bi-qr-code-scan me-2"></i>

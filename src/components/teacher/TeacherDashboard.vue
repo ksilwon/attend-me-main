@@ -17,7 +17,6 @@ const filters = ref({
   searchText: ''
 })
 
-// Oblicz daty dla filtrów (do filtrowania po stronie klienta)
 const getDateRange = (filter: string): { dateFrom?: string; dateTo?: string } => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -62,7 +61,6 @@ const getDateRange = (filter: string): { dateFrom?: string; dateTo?: string } =>
   }
 }
 
-/** Pobiera datę sesji w formacie YYYY-MM-DD do porównań */
 const getSessionDateStr = (s: CourseSessionListItem): string => {
   const raw = s.sessionDate ?? s.dateStart ?? ''
   if (!raw) return ''
@@ -70,7 +68,6 @@ const getSessionDateStr = (s: CourseSessionListItem): string => {
   return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0] ?? ''
 }
 
-/** Filtrowanie po stronie klienta – zawsze działa niezależnie od backendu */
 const sessions = computed(() => {
   const list = allSessions.value
   const dateFilter = filters.value.dateFilter
@@ -140,8 +137,6 @@ const getSessionId = (s: CourseSessionListItem) =>
 const goToSession = (s: CourseSessionListItem) => {
   router.push({ name: 'teacher-session', params: { id: String(getSessionId(s)) } })
 }
-
-// Filtrów nie trzeba obserwować – sessions to computed z allSessions + filters
 
 onMounted(() => {
   fetchSessions()

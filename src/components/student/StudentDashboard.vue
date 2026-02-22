@@ -49,7 +49,6 @@ const getDateRange = (filter: string): { dateFrom?: string; dateTo?: string } =>
   }
 }
 
-/** Data sesji w formacie YYYY-MM-DD */
 const getSessionDateStr = (s: CourseSessionListItem): string => {
   const raw = s.sessionDate ?? s.dateStart ?? ''
   if (!raw) return ''
@@ -57,7 +56,6 @@ const getSessionDateStr = (s: CourseSessionListItem): string => {
   return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0] ?? ''
 }
 
-/** Filtrowanie po stronie klienta */
 const sessions = computed(() => {
   const list = allSessions.value
   const dateFilter = filters.value.dateFilter

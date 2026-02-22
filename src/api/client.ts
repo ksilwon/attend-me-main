@@ -24,11 +24,9 @@ class AttendMeClient {
       headers: { 'Content-Type': 'application/json' },
     })
 
-    // Odtworzenie tokenów z pamięci przeglądarki
     this._userToken = sessionStorage.getItem('attendme_user_token')
     this._deviceToken = localStorage.getItem('attendme_device_token')
 
-    // Interceptor dodający token autoryzacji do żądań
     this.api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
       const token = this.getActiveToken(config.url)
       if (token) {
@@ -38,7 +36,6 @@ class AttendMeClient {
     })
   }
 
-  /** Dobiera właściwy token w zależności od endpointu */
   private getActiveToken(url?: string): string | null {
     if (url?.includes('/api/User/attendance-ticket')) {
       return this._deviceToken
@@ -79,35 +76,26 @@ class AttendMeClient {
     this._scannerToken = token
   }
 
-  // ── Autentykacja ──────────────────────────────────────────
-
-  /** Logowanie użytkownika (student / wykładowca / admin) */
   async userLogin(loginName: string, password: string): Promise<TokenResult> {
     const { data } = await this.api.post<TokenResult>('/api/User/login', { loginName, password })
     this.setUserToken(data.token)
     return data
   }
 
-  /** Pobranie informacji o zalogowanym użytkowniku */
   async userGet(userId?: number): Promise<User> {
     const url = userId !== undefined ? `/api/User/${userId}` : '/api/User'
     const { data } = await this.api.get<User>(url)
     return data
   }
 
-  /** Wylogowanie – usuwa token z sesji */
   logout(): void {
     this.setUserToken(null)
   }
 
-  /** Reset tokenu urządzenia (czyści localStorage) */
   deviceAuthReset(): void {
     this.setDeviceToken(null)
   }
 
-  // ── Endpointy Wykładowcy ──────────────────────────────────
-
-  /** Lista zajęć prowadzącego */
   async courseTeacherSessionsGet(
     body: CourseSessionListFiltersPagedListParams
   ): Promise<CourseSessionListItemPagedList> {
@@ -118,7 +106,6 @@ class AttendMeClient {
     return data
   }
 
-  /** Szczegóły zajęć prowadzącego */
   async courseTeacherSessionGet(sessionId: number): Promise<CourseSessionListItem> {
     const { data } = await this.api.get<CourseSessionListItem>(
       `/api/CourseSession/teacher/${sessionId}`
@@ -126,7 +113,6 @@ class AttendMeClient {
     return data
   }
 
-  /** Lista obecności na zajęciach */
   async courseSessionAttendanceListGet(
     sessionId: number
   ): Promise<CourseSessionAttendanceRecord[]> {
@@ -136,7 +122,6 @@ class AttendMeClient {
     return data
   }
 
-  /** Token sesji skanera (do otwarcia skanera na innym urządzeniu) */
   async courseSessionAttendanceScannerTokenGet(
     courseSessionId: number
   ): Promise<TokenResult> {
@@ -146,7 +131,6 @@ class AttendMeClient {
     return data
   }
 
-  /** Rejestracja obecności – wysyła zeskanowany token studenta */
   async courseSessionAttendanceRegister(attenderToken: string): Promise<User> {
     const { data } = await this.api.post<User>(
       '/api/CourseSession/attendance/register',
@@ -156,9 +140,6 @@ class AttendMeClient {
     return data
   }
 
-  // ── Endpointy Studenta ────────────────────────────────────
-
-  /** Lista zajęć studenta */
   async courseStudentSessionsGet(
     body: CourseSessionListFiltersPagedListParams
   ): Promise<CourseSessionListItemPagedList> {
@@ -169,7 +150,6 @@ class AttendMeClient {
     return data
   }
 
-  /** Wszystkie zajęcia z danej grupy dla studenta */
   async courseStudentGroupSessionsGet(
     courseGroupId: number
   ): Promise<CourseSessionListItem[]> {
@@ -179,7 +159,6 @@ class AttendMeClient {
     return data
   }
 
-  /** Historia obecności studenta w danej grupie */
   async courseStudentAttendanceGet(courseGroupId: number): Promise<AttendanceLog[]> {
     const { data } = await this.api.get<AttendanceLog[]>(
       `/api/CourseSession/student/group/${courseGroupId}/attendance`
@@ -187,7 +166,6 @@ class AttendMeClient {
     return data
   }
 
-  /** Rejestracja urządzenia studenta z tokenem tymczasowym */
   async userDeviceRegisterWithToken(
     token: string,
     deviceData: DeviceRegisterDTO
@@ -205,12 +183,10 @@ class AttendMeClient {
     }
   }
 
-  /** Pobranie ticketu obecności (wyświetlanego jako QR) */
   async userAttendanceTicketGet(): Promise<TokenResult> {
     const { data } = await this.api.get<TokenResult>('/api/User/attendance-ticket')
     return data
   }
 }
 
-/** Singleton klienta API */
 export const apiClient = new AttendMeClient()
