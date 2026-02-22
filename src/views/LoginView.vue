@@ -100,15 +100,6 @@ const handleLogin = async () => {
           </span>
         </button>
       </form>
-
-      <!-- Podpowiedź -->
-      <div class="mt-4 p-3 bg-light rounded">
-        <small class="text-muted">
-          <strong>Dane testowe:</strong><br />
-          Wykładowca: <code>pk</code> / <code>123#Asd</code><br />
-          Student: <code>stu12345</code> / <code>12345</code>
-        </small>
-      </div>
     </div>
   </div>
 </template>
