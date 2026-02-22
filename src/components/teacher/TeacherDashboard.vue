@@ -8,7 +8,7 @@ import SessionFilters from '@/components/common/SessionFilters.vue'
 
 const router = useRouter()
 
-const sessions = ref<CourseSessionListItem[]>([])
+const allSessions = ref<CourseSessionListItem[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 
@@ -17,13 +17,13 @@ const filters = ref({
   searchText: ''
 })
 
-// Oblicz daty dla filtrów
+// Oblicz daty dla filtrów (do filtrowania po stronie klienta)
 const getDateRange = (filter: string): { dateFrom?: string; dateTo?: string } => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
   const formatDate = (date: Date): string => {
-    return date.toISOString().split('T')[0]
+    return date.toISOString().split('T')[0] ?? ''
   }
 
   switch (filter) {
@@ -62,19 +62,49 @@ const getDateRange = (filter: string): { dateFrom?: string; dateTo?: string } =>
   }
 }
 
+/** Pobiera datę sesji w formacie YYYY-MM-DD do porównań */
+const getSessionDateStr = (s: CourseSessionListItem): string => {
+  const raw = s.sessionDate ?? s.dateStart ?? ''
+  if (!raw) return ''
+  const d = new Date(raw)
+  return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0] ?? ''
+}
+
+/** Filtrowanie po stronie klienta – zawsze działa niezależnie od backendu */
+const sessions = computed(() => {
+  const list = allSessions.value
+  const dateFilter = filters.value.dateFilter
+  const searchText = (filters.value.searchText || '').trim().toLowerCase()
+  const range = getDateRange(dateFilter)
+
+  return list.filter((s) => {
+    if (dateFilter !== 'all' && range.dateFrom && range.dateTo) {
+      const sessionDate = getSessionDateStr(s)
+      if (!sessionDate || sessionDate < range.dateFrom || sessionDate > range.dateTo) {
+        return false
+      }
+    }
+    if (searchText) {
+      const courseName = (s.courseName ?? '').toLowerCase()
+      const groupName = (s.groupName ?? s.courseGroupName ?? '').toLowerCase()
+      const location = (s.location ?? s.locationName ?? '').toLowerCase()
+      const match = courseName.includes(searchText) || groupName.includes(searchText) || location.includes(searchText)
+      if (!match) return false
+    }
+    return true
+  })
+})
+
 const fetchSessions = async () => {
   loading.value = true
   error.value = null
 
   try {
-    const dateRange = getDateRange(filters.value.dateFilter)
     const result = await courseTeacherSessionsGet({
       pageNumber: 1,
-      pageSize: 999999,
-      text: filters.value.searchText || undefined,
-      ...dateRange
+      pageSize: 999999
     })
-    sessions.value = result.items || []
+    allSessions.value = result.items || []
   } catch (err: any) {
     error.value = err.response?.data?.message || 'Błąd pobierania listy zajęć'
     console.error('Błąd:', err)
@@ -93,18 +123,25 @@ const formatDate = (dateStr: string): string => {
   })
 }
 
-const formatTime = (startTime: string, endTime: string): string => {
-  return `${startTime.substring(0, 5)} - ${endTime.substring(0, 5)}`
+const formatTime = (s: CourseSessionListItem): string => {
+  const start = s.startTime ?? (s.dateStart ? new Date(s.dateStart).toTimeString().slice(0, 5) : '')
+  const end = s.endTime ?? (s.dateEnd ? new Date(s.dateEnd).toTimeString().slice(0, 5) : '')
+  return `${start} - ${end}`
 }
 
-const goToSession = (sessionId: number) => {
-  router.push({ name: 'teacher-session', params: { id: sessionId } })
+const sessionDate = (s: CourseSessionListItem) => s.sessionDate ?? s.dateStart ?? ''
+const sessionLocation = (s: CourseSessionListItem) =>
+  s.isRemote ? 'Zdalnie' : (s.location ?? s.locationName ?? 'Brak informacji')
+const sessionGroup = (s: CourseSessionListItem) => s.groupName ?? s.courseGroupName ?? ''
+
+const getSessionId = (s: CourseSessionListItem) =>
+  s.sessionId ?? s.courseSessionId ?? 0
+
+const goToSession = (s: CourseSessionListItem) => {
+  router.push({ name: 'teacher-session', params: { id: String(getSessionId(s)) } })
 }
 
-// Obserwuj zmiany filtrów
-watch(filters, () => {
-  fetchSessions()
-}, { deep: true })
+// Filtrów nie trzeba obserwować – sessions to computed z allSessions + filters
 
 onMounted(() => {
   fetchSessions()
@@ -151,7 +188,7 @@ onMounted(() => {
       >
         <div
           class="card h-100 session-card"
-          @click="goToSession(session.sessionId)"
+          @click="goToSession(session)"
           style="cursor: pointer"
         >
           <div class="card-body">
@@ -160,23 +197,23 @@ onMounted(() => {
             </h5>
             <h6 class="card-subtitle mb-2 text-muted">
               <i class="bi bi-people me-1"></i>
-              {{ session.groupName }}
+              {{ sessionGroup(session) }}
             </h6>
 
             <hr />
 
             <p class="mb-2">
               <i class="bi bi-calendar-event me-2 text-primary"></i>
-              {{ formatDate(session.sessionDate) }}
+              {{ formatDate(sessionDate(session)) }}
             </p>
             <p class="mb-2">
               <i class="bi bi-clock me-2 text-primary"></i>
-              {{ formatTime(session.startTime, session.endTime) }}
+              {{ formatTime(session) }}
             </p>
             <p class="mb-0">
               <i class="bi bi-geo-alt me-2 text-primary"></i>
               <span v-if="session.isRemote" class="badge bg-info">Zdalnie</span>
-              <span v-else>{{ session.location || 'Brak informacji' }}</span>
+              <span v-else>{{ sessionLocation(session) }}</span>
             </p>
           </div>
           <div class="card-footer bg-transparent">

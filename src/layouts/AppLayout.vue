@@ -7,10 +7,12 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const userDisplayName = computed(() => {
-  if (authStore.user) {
-    return `${authStore.user.firstName} ${authStore.user.lastName}`
-  }
-  return authStore.user?.loginName || 'Użytkownik'
+  const u = authStore.user
+  if (!u) return 'Użytkownik'
+  const first = u.firstName ?? u.name ?? ''
+  const last = u.lastName ?? u.surname ?? ''
+  if (first || last) return `${first} ${last}`.trim()
+  return u.loginName || 'Użytkownik'
 })
 
 const userRole = computed(() => {

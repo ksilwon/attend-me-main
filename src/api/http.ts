@@ -13,21 +13,23 @@ const http = axios.create({
 // Request interceptor - dodaje token do nagłówków
 http.interceptors.request.use(
   (config) => {
-    // Nie dodawaj tokenu do logowania
-    if (config.url?.includes('/user/login')) {
+    // Nie dodawaj tokenu do logowania ani rejestracji urządzenia (token w query)
+    if (config.url?.includes('/user/login') || config.url?.includes('/user/device/register')) {
       return config
     }
 
     const authStore = useAuthStore()
-    
-    // Sprawdź czy to request wymagający device token
-    if (config.url?.includes('/user/attendance/ticket') || 
-        config.url?.includes('/user/device/register')) {
+
+    // Żądania biletów obecności (QR) wymagają tokenu urządzenia
+    if (config.url?.includes('/user/attendance/ticket/get')) {
       const deviceToken = authStore.deviceToken
       if (deviceToken) {
         config.headers.Authorization = `Bearer ${deviceToken}`
       }
-    } else if (authStore.token) {
+      return config
+    }
+
+    if (authStore.token) {
       config.headers.Authorization = `Bearer ${authStore.token}`
     }
 

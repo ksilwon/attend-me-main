@@ -24,7 +24,7 @@ const filterOptions = [
 ]
 
 const currentFilter = computed(() => {
-  return filterOptions.find((f) => f.value === dateFilter.value)?.label || 'Wszystkie'
+  return filterOptions.find((f) => f.value === dateFilter.value)?.label ?? 'Wszystkie'
 })
 
 watch([dateFilter, searchText], () => {

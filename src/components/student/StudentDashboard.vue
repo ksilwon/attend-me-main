@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { courseStudentSessionsGet } from '@/api/endpoints'
 import type { CourseSessionListItem } from '@/api/types'
@@ -8,7 +8,7 @@ import SessionFilters from '@/components/common/SessionFilters.vue'
 
 const router = useRouter()
 
-const sessions = ref<CourseSessionListItem[]>([])
+const allSessions = ref<CourseSessionListItem[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 
@@ -22,7 +22,7 @@ const getDateRange = (filter: string): { dateFrom?: string; dateTo?: string } =>
   today.setHours(0, 0, 0, 0)
 
   const formatDate = (date: Date): string => {
-    return date.toISOString().split('T')[0]
+    return date.toISOString().split('T')[0] ?? ''
   }
 
   switch (filter) {
@@ -49,19 +49,49 @@ const getDateRange = (filter: string): { dateFrom?: string; dateTo?: string } =>
   }
 }
 
+/** Data sesji w formacie YYYY-MM-DD */
+const getSessionDateStr = (s: CourseSessionListItem): string => {
+  const raw = s.sessionDate ?? s.dateStart ?? ''
+  if (!raw) return ''
+  const d = new Date(raw)
+  return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0] ?? ''
+}
+
+/** Filtrowanie po stronie klienta */
+const sessions = computed(() => {
+  const list = allSessions.value
+  const dateFilter = filters.value.dateFilter
+  const searchText = (filters.value.searchText || '').trim().toLowerCase()
+  const range = getDateRange(dateFilter)
+
+  return list.filter((s) => {
+    if (dateFilter !== 'all' && range.dateFrom && range.dateTo) {
+      const sessionDate = getSessionDateStr(s)
+      if (!sessionDate || sessionDate < range.dateFrom || sessionDate > range.dateTo) {
+        return false
+      }
+    }
+    if (searchText) {
+      const courseName = (s.courseName ?? '').toLowerCase()
+      const groupName = (s.groupName ?? s.courseGroupName ?? '').toLowerCase()
+      const location = (s.location ?? s.locationName ?? '').toLowerCase()
+      const match = courseName.includes(searchText) || groupName.includes(searchText) || location.includes(searchText)
+      if (!match) return false
+    }
+    return true
+  })
+})
+
 const fetchSessions = async () => {
   loading.value = true
   error.value = null
 
   try {
-    const dateRange = getDateRange(filters.value.dateFilter)
     const result = await courseStudentSessionsGet({
       pageNumber: 1,
-      pageSize: 999999,
-      text: filters.value.searchText || undefined,
-      ...dateRange
+      pageSize: 999999
     })
-    sessions.value = result.items || []
+    allSessions.value = result.items || []
   } catch (err: any) {
     error.value = err.response?.data?.message || 'Błąd pobierania listy zajęć'
     console.error('Błąd:', err)
@@ -80,9 +110,13 @@ const formatDate = (dateStr: string): string => {
   })
 }
 
-const formatTime = (startTime: string, endTime: string): string => {
-  return `${startTime.substring(0, 5)} - ${endTime.substring(0, 5)}`
+const formatTime = (s: CourseSessionListItem): string => {
+  const start = s.startTime ?? (s.dateStart ? new Date(s.dateStart).toTimeString().slice(0, 5) : '')
+  const end = s.endTime ?? (s.dateEnd ? new Date(s.dateEnd).toTimeString().slice(0, 5) : '')
+  return `${start} - ${end}`
 }
+
+const sessionDateStr = (s: CourseSessionListItem) => s.sessionDate ?? s.dateStart ?? ''
 
 const getAttendanceStatus = (status?: string): { text: string; class: string } => {
   switch (status?.toLowerCase()) {
@@ -95,12 +129,14 @@ const getAttendanceStatus = (status?: string): { text: string; class: string } =
   }
 }
 
+const getSessionId = (s: CourseSessionListItem) => s.sessionId ?? s.courseSessionId ?? 0
+
 const goToSession = (session: CourseSessionListItem) => {
   router.push({
     name: 'student-session',
     params: {
-      id: session.sessionId,
-      groupId: session.courseGroupId
+      id: String(getSessionId(session)),
+      groupId: String(session.courseGroupId)
     }
   })
 }
@@ -108,10 +144,6 @@ const goToSession = (session: CourseSessionListItem) => {
 const goToAttendance = () => {
   router.push({ name: 'attendance' })
 }
-
-watch(filters, () => {
-  fetchSessions()
-}, { deep: true })
 
 onMounted(() => {
   fetchSessions()
@@ -168,16 +200,16 @@ onMounted(() => {
           <h5 class="mb-1">{{ session.courseName }}</h5>
           <p class="mb-1 text-muted">
             <i class="bi bi-calendar-event me-1"></i>
-            {{ formatDate(session.sessionDate) }}
+            {{ formatDate(sessionDateStr(session)) }}
             <span class="ms-2">
               <i class="bi bi-clock me-1"></i>
-              {{ formatTime(session.startTime, session.endTime) }}
+              {{ formatTime(session) }}
             </span>
           </p>
           <small>
             <i class="bi bi-geo-alt me-1"></i>
             <span v-if="session.isRemote">Zdalnie</span>
-            <span v-else>{{ session.location || 'Brak lokalizacji' }}</span>
+            <span v-else>{{ session.location ?? session.locationName ?? 'Brak lokalizacji' }}</span>
           </small>
         </div>
         <div class="text-end">
@@ -188,7 +220,7 @@ onMounted(() => {
             {{ getAttendanceStatus(session.attendanceStatus).text }}
           </span>
           <br />
-          <small class="text-muted">{{ session.groupName }}</small>
+          <small class="text-muted">{{ session.groupName ?? session.courseGroupName }}</small>
         </div>
       </div>
     </div>

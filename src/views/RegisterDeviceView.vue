@@ -54,21 +54,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-4">
-          <div class="text-center mb-4">
-            <h1 class="text-primary fw-bold">
-              <i class="bi bi-phone me-2"></i>
-              Rejestracja urządzenia
-            </h1>
-            <p class="text-muted">AttendMe - System obecności</p>
-          </div>
-
-          <div class="card shadow">
-            <div class="card-body p-4">
-              <div v-if="success" class="alert alert-success text-center">
+  <div class="card shadow">
+    <div class="card-body p-4">
+      <h4 class="card-title text-center mb-4">
+        <i class="bi bi-phone me-2"></i>
+        Rejestracja urządzenia
+      </h4>
+      <div v-if="success" class="alert alert-success text-center">
                 <i class="bi bi-check-circle display-4"></i>
                 <h5 class="mt-3">Urządzenie zarejestrowane!</h5>
                 <p class="mb-0">Za chwilę zostaniesz przekierowany...</p>
@@ -114,10 +106,6 @@ onMounted(() => {
                   </span>
                 </button>
               </form>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>

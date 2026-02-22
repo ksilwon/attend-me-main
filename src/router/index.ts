@@ -9,14 +9,21 @@ const router = createRouter({
       redirect: '/login'
     },
     {
-      path: '/login',
-      name: 'login',
-      component: () => import('@/views/LoginView.vue')
-    },
-    {
-      path: '/register-device',
-      name: 'register-device',
-      component: () => import('@/views/RegisterDeviceView.vue')
+      path: '/',
+      component: () => import('@/layouts/AuthLayout.vue'),
+      children: [
+        { path: '', redirect: { name: 'login' } },
+        {
+          path: 'login',
+          name: 'login',
+          component: () => import('@/views/LoginView.vue')
+        },
+        {
+          path: 'register-device',
+          name: 'register-device',
+          component: () => import('@/views/RegisterDeviceView.vue')
+        }
+      ]
     },
     {
       path: '/scan/:sessionId',

@@ -1,4 +1,4 @@
-import { http } from './http'
+import http from './http'
 
 export type TokenResult = { token: string }
 export type User = {

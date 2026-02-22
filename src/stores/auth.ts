@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { User } from '@/api/types'
 import { userLogin, userGet } from '@/api/endpoints'
+import { normalizeUser } from '@/utils/apiMapping'
 
 export const useAuthStore = defineStore('auth', () => {
   // State
@@ -16,21 +17,21 @@ export const useAuthStore = defineStore('auth', () => {
   const isDeviceRegistered = computed(() => !!deviceToken.value)
 
   const isTeacher = computed(() => {
-    if (user.value?.roles?.length) {
-      return user.value.roles.some(
-        (r) => r.toLowerCase() === 'teacher' || r.toLowerCase() === 'admin'
-      )
+    const u = user.value
+    if (u?.roles?.length) {
+      return u.roles.some((r) => r.toLowerCase() === 'teacher' || r.toLowerCase() === 'admin')
     }
-    // Fallback: wykładowca ma login 'pk'
-    return user.value?.loginName === 'pk'
+    if ((u as any)?.isTeacher === true || (u as any)?.isAdmin === true) return true
+    return u?.loginName === 'pk'
   })
 
   const isStudent = computed(() => {
-    if (user.value?.roles?.length) {
-      return user.value.roles.some((r) => r.toLowerCase() === 'student')
+    const u = user.value
+    if (u?.roles?.length) {
+      return u.roles.some((r) => r.toLowerCase() === 'student')
     }
-    // Fallback: student ma login zaczynający się od 'stu'
-    return user.value?.loginName?.startsWith('stu') ?? false
+    if ((u as any)?.isStudent === true) return true
+    return u?.loginName?.startsWith('stu') ?? false
   })
 
   // Actions
@@ -44,7 +45,7 @@ export const useAuthStore = defineStore('auth', () => {
       sessionStorage.setItem('token', result.token)
       sessionStorage.setItem('userLogin', loginName)
       
-      // Ustaw użytkownika na podstawie loginu (fallback)
+      // Fallback na podstawie loginu
       user.value = {
         id: 0,
         loginName: loginName,
@@ -52,12 +53,11 @@ export const useAuthStore = defineStore('auth', () => {
         lastName: loginName === 'pk' ? 'Kołodziej' : loginName.replace('stu', ''),
         roles: loginName === 'pk' ? ['teacher'] : ['student']
       }
-      
-      // Spróbuj pobrać pełne dane użytkownika
+
       try {
         const userData = await userGet()
         if (userData) {
-          user.value = userData
+          user.value = { ...userData, ...normalizeUser(userData) }
         }
       } catch (e) {
         console.log('Używam danych fallback dla użytkownika')
@@ -76,10 +76,9 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const userData = await userGet()
       if (userData) {
-        user.value = userData
+        user.value = { ...userData, ...normalizeUser(userData) }
       }
     } catch (err) {
-      // Użyj danych z sessionStorage jako fallback
       const savedLogin = sessionStorage.getItem('userLogin')
       if (savedLogin && !user.value) {
         user.value = {

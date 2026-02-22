@@ -8,6 +8,7 @@ import {
   courseTeacherSessionGet
 } from '@/api/endpoints'
 import type { CourseSessionListItem } from '@/api/types'
+import { normalizeSession, normalizeUser } from '@/utils/apiMapping'
 
 const route = useRoute()
 const router = useRouter()
@@ -20,6 +21,9 @@ const message = ref<{ text: string; type: 'success' | 'danger' | 'warning' } | n
 const cameraError = ref<string | null>(null)
 
 const sessionId = computed(() => Number(route.params.sessionId))
+const normalizedSession = computed(() =>
+  session.value ? normalizeSession(session.value) : null
+)
 
 const fetchData = async () => {
   loading.value = true
@@ -44,9 +48,10 @@ const onDecode = async (decodedString: string) => {
   if (!scannerToken.value || !decodedString) return
 
   try {
-    const user = await courseSessionAttendanceRegister(decodedString, scannerToken.value)
+    const userResp = await courseSessionAttendanceRegister(decodedString, scannerToken.value)
+    const u = normalizeUser(userResp)
     message.value = {
-      text: `✓ Zarejestrowano obecność: ${user.firstName} ${user.lastName}`,
+      text: `✓ Zarejestrowano obecność: ${u.firstName} ${u.lastName}`,
       type: 'success'
     }
   } catch (err: any) {
@@ -103,10 +108,10 @@ onMounted(() => {
       </div>
 
       <!-- Info o zajęciach -->
-      <div v-if="session" class="text-center mb-4">
-        <h5>{{ session.courseName }}</h5>
+      <div v-if="normalizedSession" class="text-center mb-4">
+        <h5>{{ normalizedSession.courseName }}</h5>
         <p class="mb-0 text-muted">
-          {{ session.groupName }} • {{ formatDate(session.sessionDate) }}
+          {{ normalizedSession.groupName }} • {{ formatDate(normalizedSession.sessionDate) }}
         </p>
       </div>
 

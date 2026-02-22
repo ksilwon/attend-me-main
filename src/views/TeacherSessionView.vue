@@ -7,6 +7,7 @@ import {
 } from '@/api/endpoints'
 import type { CourseSessionListItem, CourseSessionAttendanceRecord } from '@/api/types'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import { normalizeSession, normalizeAttendanceRecord } from '@/utils/apiMapping'
 
 const route = useRoute()
 const router = useRouter()
@@ -19,17 +20,23 @@ const linkCopied = ref(false)
 
 const sessionId = computed(() => Number(route.params.id))
 
+const normalizedSession = computed(() =>
+  session.value ? normalizeSession(session.value) : null
+)
+const normalizedAttendanceList = computed(() =>
+  attendanceList.value.map(normalizeAttendanceRecord)
+)
+
 const scannerLink = computed(() => {
   const baseUrl = window.location.origin + window.location.pathname
   return `${baseUrl}#/scan/${sessionId.value}`
 })
 
-const presentCount = computed(() => 
-  attendanceList.value.filter(a => a.isPresent).length
+const presentCount = computed(() =>
+  normalizedAttendanceList.value.filter((a) => a.isPresent).length
 )
-
-const absentCount = computed(() => 
-  attendanceList.value.filter(a => !a.isPresent).length
+const absentCount = computed(() =>
+  normalizedAttendanceList.value.filter((a) => !a.isPresent).length
 )
 
 const fetchData = async () => {
@@ -124,13 +131,13 @@ onUnmounted(() => {
     </div>
 
     <!-- Treść -->
-    <div v-else-if="session">
+    <div v-else-if="normalizedSession">
       <!-- Sygnatura zajęć -->
       <div class="card mb-4">
         <div class="card-header bg-primary text-white">
           <h4 class="mb-0">
             <i class="bi bi-book me-2"></i>
-            {{ session.courseName }}
+            {{ normalizedSession.courseName }}
           </h4>
         </div>
         <div class="card-body">
@@ -138,27 +145,27 @@ onUnmounted(() => {
             <div class="col-md-4">
               <p class="mb-2">
                 <i class="bi bi-people me-2 text-primary"></i>
-                <strong>Grupa:</strong> {{ session.groupName }}
+                <strong>Grupa:</strong> {{ normalizedSession.groupName }}
               </p>
             </div>
             <div class="col-md-4">
               <p class="mb-2">
                 <i class="bi bi-calendar-event me-2 text-primary"></i>
-                <strong>Data:</strong> {{ formatDate(session.sessionDate) }}
+                <strong>Data:</strong> {{ formatDate(normalizedSession.sessionDate) }}
               </p>
             </div>
             <div class="col-md-4">
               <p class="mb-2">
                 <i class="bi bi-clock me-2 text-primary"></i>
-                <strong>Godzina:</strong> {{ formatTime(session.startTime, session.endTime) }}
+                <strong>Godzina:</strong> {{ formatTime(normalizedSession.startTime, normalizedSession.endTime) }}
               </p>
             </div>
           </div>
           <p class="mb-0">
             <i class="bi bi-geo-alt me-2 text-primary"></i>
             <strong>Lokalizacja:</strong>
-            <span v-if="session.isRemote" class="badge bg-info ms-1">Zdalnie</span>
-            <span v-else class="ms-1">{{ session.location || 'Brak informacji' }}</span>
+            <span v-if="normalizedSession.isRemote" class="badge bg-info ms-1">Zdalnie</span>
+            <span v-else class="ms-1">{{ normalizedSession.location || 'Brak informacji' }}</span>
           </p>
         </div>
       </div>
@@ -218,7 +225,7 @@ onUnmounted(() => {
           </div>
         </div>
         <div class="card-body p-0">
-          <div v-if="attendanceList.length === 0" class="text-center py-4">
+          <div v-if="normalizedAttendanceList.length === 0" class="text-center py-4">
             <p class="text-muted mb-0">Brak studentów na liście</p>
           </div>
           <table v-else class="table table-hover mb-0">
@@ -232,7 +239,7 @@ onUnmounted(() => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(record, index) in attendanceList" :key="record.userId">
+              <tr v-for="(record, index) in normalizedAttendanceList" :key="record.userId">
                 <td>{{ index + 1 }}</td>
                 <td>{{ record.firstName }} {{ record.lastName }}</td>
                 <td>{{ record.indexNo }}</td>

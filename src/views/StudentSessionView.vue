@@ -28,7 +28,9 @@ const attendanceStats = computed(() => {
   
   // Oblicz zaawansowanie kursu
   const now = new Date()
-  const pastSessions = allSessions.value.filter(s => new Date(s.sessionDate) <= now).length
+  const pastSessions = allSessions.value.filter(
+    (s) => new Date(s.sessionDate ?? s.dateStart ?? 0) <= now
+  ).length
   const totalSessions = allSessions.value.length
   const progress = totalSessions > 0 ? Math.round((pastSessions / totalSessions) * 100) : 0
 
@@ -77,8 +79,15 @@ const formatDate = (dateStr: string): string => {
 }
 
 const formatTime = (startTime: string, endTime: string): string => {
-  return `${startTime.substring(0, 5)} - ${endTime.substring(0, 5)}`
+  const s = (startTime || '').substring(0, 5)
+  const e = (endTime || '').substring(0, 5)
+  return s && e ? `${s} - ${e}` : ''
 }
+
+const getSessionTimes = (s: CourseSessionListItem) => ({
+  start: s.startTime ?? (s.dateStart ? new Date(s.dateStart).toTimeString().slice(0, 5) : ''),
+  end: s.endTime ?? (s.dateEnd ? new Date(s.dateEnd).toTimeString().slice(0, 5) : '')
+})
 
 const goBack = () => {
   router.push({ name: 'dashboard' })
@@ -137,19 +146,19 @@ onMounted(() => {
             <div class="col-md-4">
               <p class="mb-2">
                 <i class="bi bi-people me-2 text-primary"></i>
-                <strong>Grupa:</strong> {{ session.groupName }}
+                <strong>Grupa:</strong> {{ session.groupName ?? session.courseGroupName }}
               </p>
             </div>
             <div class="col-md-4">
               <p class="mb-2">
                 <i class="bi bi-calendar-event me-2 text-primary"></i>
-                <strong>Data:</strong> {{ formatDate(session.sessionDate) }}
+                <strong>Data:</strong> {{ formatDate(session.sessionDate ?? session.dateStart ?? '') }}
               </p>
             </div>
             <div class="col-md-4">
               <p class="mb-2">
                 <i class="bi bi-clock me-2 text-primary"></i>
-                <strong>Godzina:</strong> {{ formatTime(session.startTime, session.endTime) }}
+                <strong>Godzina:</strong> {{ formatTime(getSessionTimes(session).start, getSessionTimes(session).end) }}
               </p>
             </div>
           </div>
@@ -157,7 +166,7 @@ onMounted(() => {
             <i class="bi bi-geo-alt me-2 text-primary"></i>
             <strong>Lokalizacja:</strong>
             <span v-if="session.isRemote" class="badge bg-info ms-1">Zdalnie</span>
-            <span v-else class="ms-1">{{ session.location || 'Brak informacji' }}</span>
+            <span v-else class="ms-1">{{ session.location ?? session.locationName ?? 'Brak informacji' }}</span>
           </p>
         </div>
       </div>
