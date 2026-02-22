@@ -101,7 +101,6 @@ onMounted(() => {
 
 <template>
   <div>
-    <!-- Nagłówek -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <button class="btn btn-outline-secondary" @click="goBack">
         <i class="bi bi-arrow-left me-1"></i>
@@ -119,18 +118,14 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Ładowanie -->
     <LoadingSpinner v-if="loading" message="Ładowanie szczegółów zajęć..." />
 
-    <!-- Błąd -->
     <div v-else-if="error" class="alert alert-danger">
       <i class="bi bi-exclamation-triangle me-2"></i>
       {{ error }}
     </div>
 
-    <!-- Treść -->
     <div v-else-if="session">
-      <!-- Sygnatura zajęć -->
       <div class="card mb-4">
         <div class="card-header bg-primary text-white">
           <h4 class="mb-0">
@@ -168,7 +163,6 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Statystyki frekwencji -->
       <div class="row mb-4">
         <div class="col-md-3">
           <div class="card text-center">
@@ -204,7 +198,6 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Pasek postępu -->
       <div class="card mb-4">
         <div class="card-body">
           <div class="d-flex justify-content-between mb-2">
@@ -223,7 +216,6 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Historia obecności -->
       <div class="card">
         <div class="card-header">
           <h5 class="mb-0">

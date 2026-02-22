@@ -167,25 +167,20 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- Filtry -->
     <SessionFilters v-model="filters" />
 
-    <!-- Ładowanie -->
     <LoadingSpinner v-if="loading" message="Ładowanie zajęć..." />
 
-    <!-- Błąd -->
     <div v-else-if="error" class="alert alert-danger">
       <i class="bi bi-exclamation-triangle me-2"></i>
       {{ error }}
     </div>
 
-    <!-- Brak zajęć -->
     <div v-else-if="sessions.length === 0" class="text-center py-5">
       <i class="bi bi-calendar-x display-1 text-muted"></i>
       <p class="mt-3 text-muted">Brak zajęć dla wybranych filtrów</p>
     </div>
 
-    <!-- Lista zajęć -->
     <div v-else class="list-group">
       <div
         v-for="session in sessions"

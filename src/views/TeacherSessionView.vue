@@ -108,7 +108,6 @@ onUnmounted(() => {
 
 <template>
   <div>
-    <!-- Nagłówek -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <button class="btn btn-outline-secondary" @click="goBack">
         <i class="bi bi-arrow-left me-1"></i>
@@ -120,18 +119,14 @@ onUnmounted(() => {
       </button>
     </div>
 
-    <!-- Ładowanie -->
     <LoadingSpinner v-if="loading && !session" message="Ładowanie szczegółów zajęć..." />
 
-    <!-- Błąd -->
     <div v-else-if="error" class="alert alert-danger">
       <i class="bi bi-exclamation-triangle me-2"></i>
       {{ error }}
     </div>
 
-    <!-- Treść -->
     <div v-else-if="normalizedSession">
-      <!-- Sygnatura zajęć -->
       <div class="card mb-4">
         <div class="card-header bg-primary text-white">
           <h4 class="mb-0">
@@ -169,7 +164,6 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- Akcje skanowania -->
       <div class="card mb-4">
         <div class="card-header">
           <h5 class="mb-0">
@@ -207,7 +201,6 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- Lista obecności -->
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="mb-0">

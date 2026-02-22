@@ -29,7 +29,6 @@ const handleLogin = async () => {
       <h4 class="card-title text-center mb-4">Logowanie</h4>
 
       <form @submit.prevent="handleLogin">
-        <!-- Alert błędu -->
         <div v-if="authStore.error" class="alert alert-danger alert-dismissible" role="alert">
           {{ authStore.error }}
           <button 
@@ -39,7 +38,6 @@ const handleLogin = async () => {
           ></button>
         </div>
 
-        <!-- Login -->
         <div class="mb-3">
           <label for="loginName" class="form-label">Login</label>
           <div class="input-group">
@@ -58,7 +56,6 @@ const handleLogin = async () => {
           </div>
         </div>
 
-        <!-- Hasło -->
         <div class="mb-4">
           <label for="password" class="form-label">Hasło</label>
           <div class="input-group">
@@ -84,7 +81,6 @@ const handleLogin = async () => {
           </div>
         </div>
 
-        <!-- Przycisk logowania -->
         <button
           type="submit"
           class="btn btn-primary w-100"

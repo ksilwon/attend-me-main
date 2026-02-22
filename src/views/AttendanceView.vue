@@ -62,7 +62,6 @@ onUnmounted(() => {
 
 <template>
   <div class="text-center py-4">
-    <!-- Nagłówek -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <button class="btn btn-outline-secondary" @click="goBack">
         <i class="bi bi-arrow-left me-1"></i>
@@ -75,7 +74,6 @@ onUnmounted(() => {
       <div></div>
     </div>
 
-    <!-- Komunikat sukcesu -->
     <div
       v-if="lastAttendance"
       class="alert alert-success"
@@ -87,7 +85,6 @@ onUnmounted(() => {
       <small>{{ new Date(lastAttendance.timestamp).toLocaleString('pl-PL') }}</small>
     </div>
 
-    <!-- Urządzenie niezarejestrowane -->
     <div v-if="!isDeviceReady" class="alert alert-warning">
       <i class="bi bi-exclamation-triangle me-2"></i>
       <strong>Urządzenie niezarejestrowane</strong>
@@ -96,13 +93,11 @@ onUnmounted(() => {
       </p>
     </div>
 
-    <!-- Błąd -->
     <div v-else-if="error" class="alert alert-danger">
       <i class="bi bi-exclamation-triangle me-2"></i>
       {{ error }}
     </div>
 
-    <!-- Ładowanie -->
     <div v-else-if="loading" class="py-5">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Ładowanie...</span>
@@ -110,7 +105,6 @@ onUnmounted(() => {
       <p class="mt-3 text-muted">Generowanie kodu...</p>
     </div>
 
-    <!-- Kod QR -->
     <div v-else-if="ticket" class="qr-container">
       <div class="card mx-auto" style="max-width: 350px;">
         <div class="card-body p-4">

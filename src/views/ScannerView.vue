@@ -93,7 +93,6 @@ onMounted(() => {
 <template>
   <div class="min-vh-100 bg-dark text-white">
     <div class="container py-4">
-      <!-- Nagłówek -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <button class="btn btn-outline-light" @click="goBack">
           <i class="bi bi-arrow-left me-1"></i>
@@ -106,7 +105,6 @@ onMounted(() => {
         <div></div>
       </div>
 
-      <!-- Info o zajęciach -->
       <div v-if="normalizedSession" class="text-center mb-4">
         <h5>{{ normalizedSession.courseName }}</h5>
         <p class="mb-0 text-muted">
@@ -114,7 +112,6 @@ onMounted(() => {
         </p>
       </div>
 
-      <!-- Komunikat -->
       <div
         v-if="message"
         class="alert text-center"
@@ -124,17 +121,14 @@ onMounted(() => {
         <h5 class="mb-0">{{ message.text }}</h5>
       </div>
 
-      <!-- Błąd -->
       <div v-if="error" class="alert alert-danger text-center">
         {{ error }}
       </div>
 
-      <!-- Błąd kamery -->
       <div v-if="cameraError" class="alert alert-warning text-center">
         {{ cameraError }}
       </div>
 
-      <!-- Ładowanie -->
       <div v-if="loading" class="text-center py-5">
         <div class="spinner-border text-light" role="status">
           <span class="visually-hidden">Ładowanie...</span>
@@ -142,7 +136,6 @@ onMounted(() => {
         <p class="mt-3">Inicjalizacja skanera...</p>
       </div>
 
-      <!-- Skaner QR -->
       <div v-else-if="scannerToken" class="scanner-container mx-auto" style="max-width: 500px;">
         <div class="position-relative rounded overflow-hidden">
           <QrcodeStream

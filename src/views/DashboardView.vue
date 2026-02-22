@@ -41,13 +41,10 @@ onMounted(async () => {
       <p class="mt-3 text-muted">Ładowanie pulpitu...</p>
     </div>
 
-    <!-- Wykładowca -->
     <TeacherDashboard v-else-if="userRole === 'teacher'" />
 
-    <!-- Student -->
     <StudentDashboard v-else-if="userRole === 'student'" />
 
-    <!-- Nieznana rola -->
     <div v-else class="text-center py-5">
       <div class="alert alert-warning">
         <i class="bi bi-exclamation-triangle me-2"></i>

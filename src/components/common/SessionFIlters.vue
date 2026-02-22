@@ -39,7 +39,6 @@ watch([dateFilter, searchText], () => {
   <div class="card mb-4">
     <div class="card-body">
       <div class="row g-3 align-items-center">
-        <!-- Filtr daty -->
         <div class="col-md-6">
           <label class="form-label fw-semibold">
             <i class="bi bi-calendar3 me-1"></i>
@@ -69,7 +68,6 @@ watch([dateFilter, searchText], () => {
           </div>
         </div>
 
-        <!-- Wyszukiwanie tekstowe -->
         <div class="col-md-6">
           <label class="form-label fw-semibold">
             <i class="bi bi-search me-1"></i>

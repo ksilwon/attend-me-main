@@ -94,14 +94,12 @@ const handleLogout = () => {
       </div>
     </nav>
 
-    <!-- Main content -->
     <main class="flex-grow-1 py-4">
       <div class="container">
         <RouterView />
       </div>
     </main>
 
-    <!-- Footer -->
     <footer class="bg-light py-3 mt-auto">
       <div class="container text-center text-muted">
         <small>AttendMe &copy; 2025 - System sprawdzania obecności</small>
